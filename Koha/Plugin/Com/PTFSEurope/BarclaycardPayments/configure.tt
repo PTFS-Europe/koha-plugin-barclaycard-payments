@@ -1,0 +1,98 @@
+[% INCLUDE 'doc-head-open.inc' %]
+ <title>Koha: Barclaycard ePDQ Online Payments: Configuration</title>
+[% INCLUDE 'doc-head-close.inc' %]
+</head>
+<body>
+[% INCLUDE 'header.inc' %]
+[% INCLUDE 'cat-search.inc' %]
+
+<div id="breadcrumbs"><a href="/cgi-bin/koha/mainpage.pl">Home</a> &rsaquo; <a href="/cgi-bin/koha/plugins/plugins-home.pl">Plugins</a> &rsaquo; Barclaycard ePDQ Online Payments &rsaquo; Configuration</div>
+
+<div class="main container-fluid">
+    <div class="row">
+
+        <div class="col-sm-10 col-sm-push-2">
+            <main>
+
+                <h3>Koha: Barclaycard ePDQ Online Payments: Configuration</h3>
+            
+                <!-- Notice our form here has no 'action', this is good, it means that our forms will always get passed back to 'plugins/run.pl'. You could hard code it instead if you prefer -->
+                <form method="get">
+                    <!-- Always pass these two parameters so the plugin system knows what to execute! -->
+                    <input type="hidden" name="class" value="[% CLASS %]"/>
+                    <input type="hidden" name="method" value="[% METHOD %]"/>
+
+                    <fieldset class="rows">
+                        <legend>Global Settings</legend>
+
+                        <ol>
+                            <li>
+                                <label for="enable_opac_payments">Enable OPAC Account Payments: </label>
+                                <select name="enable_opac_payments">
+                                    [% IF enable_opac_payments == 'No' %]
+                                        <option value="No" selected="selected">No</option>
+                                    [% ELSE %]
+                                        <option value="No">No</option>
+                                    [% END %]
+                        
+                                    [% IF enable_opac_payments == 'Yes' %]
+                                        <option value="Yes" selected="selected">Yes</option>
+                                    [% ELSE %]
+                                        <option value="Yes">Yes</option>
+                                    [% END %]
+                                </select>
+                            </li>
+                            <li>
+                                <label for="TestMode">Test mode: </label>
+                                <select name="TestMode">
+                                    [% IF TestMode == '1' %]
+                                        <option value="1" selected="selected">Enable</option>
+                                    [% ELSE %]
+                                        <option value="1">Enable</option>
+                                    [% END %]
+                        
+                                    [% IF TestMode == '0' %]
+                                        <option value="0" selected="selected">Disable</option>
+                                    [% ELSE %]
+                                        <option value="0">Disable</option>
+                                    [% END %]
+                                </select>
+                            </li>
+                        </ol>
+                    </fieldset>
+
+                    <fieldset class="rows">
+                        <legend>Pay360 Settings</legend>
+                        <ol>
+                            <li>
+                                <label for="PSPID">ePDQ Site ID: </label>
+                                <input type="text" name="PSPID" value="[% PSPID %]" />
+                            </li>
+
+                            <li>
+                                <label for="SHA_IN">SHA_IN Passphrase: </label>
+                                <input type="text" name="SHA_IN" value="[% SHA_IN %]" />
+                            </li>
+                        </ol>
+                    </fieldset>
+
+                    <fieldset class="action">
+                         <input type="hidden" name="save" value="1" />
+                         <input type="submit" value="Save configuration" />
+                         <a class="cancel" href="/cgi-bin/koha/plugins/run.pl?class=Koha%3A%3APlugin%3A%3ACom%3A%3APTFSEurope%3A%3ABarclaycardPayments&method=configure">Cancel</a>
+                    </fieldset>
+                </form>
+            </main>
+        </div>
+
+        <div class="col-sm-2 col-sm-pull-10">
+            <aside>
+
+                <!-- We can access our own plugins resource files using the PLUGIN_PATH variable. -->
+                <img src="[% PLUGIN_PATH %]/logo.png" />
+            </aside>
+        </div>
+
+    </div>
+
+[% INCLUDE 'intranet-bottom.inc' %]

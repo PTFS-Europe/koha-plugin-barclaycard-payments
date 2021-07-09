@@ -1,0 +1,51 @@
+[% USE Koha %]
+[% USE KohaDates %]
+
+[% INCLUDE 'doc-head-open.inc' %][% IF ( LibraryNameTitle ) %][% LibraryNameTitle %][% ELSE %]Koha online[% END %] catalog &rsaquo; Pay your fines and charges
+[% INCLUDE 'doc-head-close.inc' %]
+[% BLOCK cssinclude %][% END %]
+</head>
+<body id="opac-account" class="scrollto">
+[% INCLUDE 'masthead.inc' %]
+
+<div class="main">
+    <ul class="breadcrumb">
+        <li><a href="/cgi-bin/koha/opac-main.pl">Home</a> <span class="divider">&rsaquo;</span></li>
+        <li><a href="/cgi-bin/koha/opac-user.pl">[% borrower.firstname %] [% borrower.surname %]</a><span class="divider">&rsaquo;</span></li>
+        <li><a href="#">Pay your fines and charges</a></li>
+    </ul>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col col-lg-2 order-2 order-lg-1">
+                <div id="navigation">
+                    [% INCLUDE 'navigation.inc' IsPatronPage=1 %]
+                </div>
+            </div>
+            <div class="col-md-12 col-lg-10 order-1">
+                <div id="useraccount" class="maincontent">
+                    <p>
+                        Momentarily you will be redirected to the Barclaycard payment portal.
+                    </p>
+                
+                    <form id="paymentForm" method="post" action="[% paymentPortal | url %]" name="paymentForm">
+                        [% FOR input IN inputs.keys %]
+                        <input id="[% input | uri %]" type="hidden" name="[% input | uri %]" value='[% inputs.$input | html %]'/>
+                        [% END %]
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+[% BLOCK jsinclude %][% END %]
+
+[% INCLUDE 'opac-bottom.inc' %]
+<script>
+$(document).ready(function() {
+  $('#paymentForm').submit();
+});
+</script>
+
+
