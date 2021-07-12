@@ -29,7 +29,6 @@ use Koha::Patrons;
 
 use Mojo::Util qw(b64_decode);
 use Digest::SHA qw(sha512_hex);
-use Time::Moment;
 use File::Basename;
 use Data::GUID;
 use Data::Dumper;
