@@ -340,9 +340,9 @@ sub get_digest {
     }
 
     warn "Data to hash: " . $data;
-    warn "Digest: " . $digest;
+    warn "Digest: " . uc($digest);
 
-    return $digest;
+    return uc($digest);
 }
 
 sub validate_digest {
