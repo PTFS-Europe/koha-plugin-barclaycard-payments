@@ -72,7 +72,11 @@
                             <li>
                                 <label for="SHA_IN">SHA_IN Passphrase: </label>
                                 <input type="text" name="SHA_IN" value="[% SHA_IN %]" />
+                                <div class="hint">This passphrase is defined in the Technical information page of your ePDQ account, under the tab “Data and origin verification”, section “Checks for e-Commerce”. Please note that these values are all case sensitive when compiled to form the string before the hash!</div>
                             </li>
+                            <li>
+                                <span class="label">SHA algorithm: </span>
+                                SHA-512
                         </ol>
                     </fieldset>
 

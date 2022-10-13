@@ -16,10 +16,10 @@ use base qw(Koha::Plugins::Base);
 
 ## Koha libraries
 use C4::Context;
-use C4::Output;
+use C4::Output qw( output_html_with_http_headers );
 
 use C4::Circulation;
-use C4::Auth;
+use C4::Auth qw( get_template_and_user );
 
 use Koha;
 
@@ -41,9 +41,9 @@ our $metadata = {
     name            => 'Barclaycard ePDQ Plugin',
     author          => 'Martin Renvoize',
     date_authored   => '2020-03-01',
-    date_updated    => "2020-03-01",
+    date_updated    => "2022-09-10",
     minimum_version => '20.11.00.000',
-    maximum_version => '20.11.07.000',
+    #    maximum_version => '21.11.14.000',
     version         => $VERSION,
     description     => 'This plugin implements online payments using '
       . 'Barclaycard ePDQ payments platform.',
