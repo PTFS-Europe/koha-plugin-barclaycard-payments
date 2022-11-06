@@ -38,10 +38,9 @@
         </div>
     </div>
 
-
+[% INCLUDE 'opac-bottom.inc' %]
 [% BLOCK jsinclude %][% END %]
 
-[% INCLUDE 'opac-bottom.inc' %]
 <script>
 $(document).ready(function() {
   $('#paymentForm').submit();

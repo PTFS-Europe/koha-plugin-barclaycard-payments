@@ -153,8 +153,22 @@ sub opac_online_payment_begin {
         }
     );
     $inputs->{ACCEPTURL}  = $returnURL->as_string;
-    $inputs->{DECLINEURL} = $returnURL->as_string;
-    $inputs->{CANCELURL}  = $returnURL->as_string;
+    my $declineURL = $returnURL->clone;
+    $declineURL->query_form(
+        {
+            payment_method => scalar $cgi->param('payment_method'),
+            status => 'declined'
+        }
+    );
+    $inputs->{DECLINEURL} = $declineURL->as_string;
+    my $cancelURL = $returnURL->clone;
+    $cancelURL->query_form(
+        {
+            payment_method => scalar $cgi->param('payment_method'),
+            status => 'canceled'
+        }
+    );
+    $inputs->{CANCELURL}  = $cancelURL->as_string;
 
     my $backURL = URI->new( C4::Context->preference('OPACBaseURL')
           . "/cgi-bin/koha/opac-account.pl" );
@@ -338,8 +352,8 @@ sub get_digest {
         $digest .= '=';
     }
 
-    warn "Data to hash: " . $data;
-    warn "Digest: " . uc($digest);
+    #warn "Data to hash: " . $data;
+    #warn "Digest: " . uc($digest);
 
     return uc($digest);
 }

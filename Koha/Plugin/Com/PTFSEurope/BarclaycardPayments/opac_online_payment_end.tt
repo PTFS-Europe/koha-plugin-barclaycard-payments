@@ -16,13 +16,13 @@
     </ul>
 
     <div class="container-fluid">
-        <div class="row-fluid">
-            <div class="span2">
+        <div class="row">
+            <div class="col col-lg-2 order-2 order-lg-1">
                 <div id="navigation">
                     [% INCLUDE 'navigation.inc' IsPatronPage=1 %]
                 </div>
             </div>
-            <div class="span10">
+            <div class="col-md-12 col-lg-10 order-1">
                 <div id="useraccount" class="maincontent">
 
                     <div class="alert alert-error">
@@ -32,14 +32,14 @@
                             <p>Payment was cancelled</p>
                         [% ELSIF error_code == 'ERROR_PROCESSING' %]
                             <p>Something went wrong, the transaction was not completed</p>
-                            <p>Pleae contact a librarian for details.</p>
+                            <p>Please contact a librarian for details.</p>
                         [% END %]
                     </div>
-                </div> <!-- / #useraccount -->
-            </div> <!-- / .span10 -->
-        </div> <!-- / .row-fluid -->
-    </div> <!-- / .container-fluid -->
-</div> <!-- / .main -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 [% INCLUDE 'opac-bottom.inc' %]
 [% BLOCK jsinclude %][% END %]
