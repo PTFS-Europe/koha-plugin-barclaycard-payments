@@ -260,7 +260,7 @@ sub opac_online_payment_end {
         $error = 1;
     }
     else {
-        $template->param( error_code => "ERROR_PROCESSING" );
+        $template->param( error_code => "ERROR_PROCESSING", status_code => $STATUS );
         $error = 1;
     }
 
