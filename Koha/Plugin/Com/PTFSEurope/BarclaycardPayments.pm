@@ -207,7 +207,7 @@ sub opac_online_payment_end {
         }
     );
 
-    my $ORDERID = $cgi->param('ORDERID');
+    my $orderID = $cgi->param('orderID');
     my $STATUS  = $cgi->param('STATUS');
     my $NCERROR = $cgi->param('NCERROR');
     my $PAYID   = $cgi->param('PAYID');
@@ -218,7 +218,7 @@ sub opac_online_payment_end {
     my $sth =
       $dbh->prepare(
         "SELECT accountline_id, amount FROM $table WHERE orderid = ?");
-    $sth->execute($ORDERID);
+    $sth->execute($orderID);
     my @accountlines;
     my $total_amount = 0;
 
@@ -235,7 +235,7 @@ sub opac_online_payment_end {
             {
                 accountlines_id => { -in => \@accountlines }
             }
-        );
+        )->as_list;
 
         $account->pay(
             {
