@@ -34,7 +34,7 @@ use Data::GUID;
 use Data::Dumper;
 
 ## Here we set our plugin version
-our $VERSION = "1.0";
+our $VERSION = "1.01";
 
 ## Here is our metadata, some keys are required, some are optional
 our $metadata = {
@@ -207,6 +207,7 @@ sub opac_online_payment_end {
         }
     );
 
+    my $error   = 0;
     my $param_hash = {};
     my @params     = $cgi->multi_param;
     for my $param (@params) {
@@ -218,7 +219,6 @@ sub opac_online_payment_end {
         my $STATUS  = $cgi->param('STATUS');
         my $NCERROR = $cgi->param('NCERROR');
         my $PAYID   = $cgi->param('PAYID');
-        my $error   = 0;
 
         my $table = $self->get_qualified_table_name('orders');
         my $dbh   = C4::Context->dbh;
