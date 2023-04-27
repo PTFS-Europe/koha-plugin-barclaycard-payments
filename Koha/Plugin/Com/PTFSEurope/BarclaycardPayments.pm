@@ -34,7 +34,7 @@ use Data::GUID;
 use Data::Dumper;
 
 ## Here we set our plugin version
-our $VERSION = "{VERSION}";
+our $VERSION = "1.0";
 
 ## Here is our metadata, some keys are required, some are optional
 our $metadata = {
@@ -43,6 +43,7 @@ our $metadata = {
     date_authored   => '2020-03-01',
     date_updated    => "2022-09-10",
     minimum_version => '20.11.00.000',
+    maximum_version => undef,
     version         => $VERSION,
     description     => 'This plugin implements online payments'
       . ' using Barclaycard ePDQ payments platform.'

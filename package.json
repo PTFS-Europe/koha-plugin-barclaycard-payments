@@ -1,0 +1,21 @@
+{
+  "name": "koha-plugin-barclaycard-payments",
+  "version": "1.0.0",
+  "description": "",
+  "main": "checkVersionNumber.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "release": "bash ./release_kpz.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PTFS-Europe/koha-plugin-barclaycard-payments.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PTFS-Europe/koha-plugin-barclaycard-payments/issues"
+  },
+  "homepage": "https://github.com/PTFS-Europe/koha-plugin-barclaycard-payments#readme"
+}
