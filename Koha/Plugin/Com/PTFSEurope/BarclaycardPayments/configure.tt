@@ -1,3 +1,4 @@
+[% USE Koha %]
 [% INCLUDE 'doc-head-open.inc' %]
  <title>Koha: Barclaycard ePDQ Online Payments: Configuration</title>
 [% INCLUDE 'doc-head-close.inc' %]
@@ -14,7 +15,7 @@
         <div class="col-sm-10 col-sm-push-2">
             <main>
 
-                <h3>Koha: Barclaycard ePDQ Online Payments: Configuration</h3>
+                <h1>Koha: Barclaycard ePDQ Online Payments: Configuration</h1>
             
                 <!-- Notice our form here has no 'action', this is good, it means that our forms will always get passed back to 'plugins/run.pl'. You could hard code it instead if you prefer -->
                 <form method="get">
@@ -62,21 +63,41 @@
                     </fieldset>
 
                     <fieldset class="rows">
-                        <legend>Pay360 Settings</legend>
+                        <legend>ePDQ Settings</legend>
+                        <div>Settings entered here must match the settings as configured on the ePDQ configuration pages</div>
                         <ol>
                             <li>
                                 <label for="PSPID">ePDQ Site ID: </label>
                                 <input type="text" name="PSPID" value="[% PSPID %]" />
                             </li>
-
+                            <li>
+                                <span class="label">SHA algorithm: </span>
+                                <b>SHA-512</b>
+                                <div class="hint">
+                                    <b>Configuration > Technical information > Global security parameters</b>
+                                </div>
+                            </li>
+                            <li>
+                                <span class="label">URL of merchange page: </span>
+                                <b>[% Koha.Preference('OPACBaseURL') | url %]</b>
+                                <div class="hint">
+                                    <b>Configuration > Technical information > Data origin and varification | Checks for e-Commerce</b>
+                                </div>
+                            </li>
                             <li>
                                 <label for="SHA_IN">SHA_IN Passphrase: </label>
                                 <input type="text" name="SHA_IN" value="[% SHA_IN %]" />
-                                <div class="hint">This passphrase is defined in the Technical information page of your ePDQ account, under the tab “Data and origin verification”, section “Checks for e-Commerce”. Please note that these values are all case sensitive when compiled to form the string before the hash!</div>
+                                <div class="hint">
+                                    <b>Configuration > Technical information > Data and origin verification | Checks for e-Commerce</b>
+                                </div>
                             </li>
                             <li>
-                                <span class="label">SHA algorithm: </span>
-                                SHA-512
+                                <label for="SHA_OUT">SHA_OUT Passphrase: </label>
+                                <input type="text" name="SHA_OUT" value="[% SHA_OUT %]" />
+                                <div class="hint">
+                                    <b>Configuration > Technical information > Transaction feedback | All transaction submission modes</b>
+                                </div>
+                            </li>
                         </ol>
                     </fieldset>
 

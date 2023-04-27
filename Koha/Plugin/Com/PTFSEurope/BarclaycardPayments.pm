@@ -27,7 +27,7 @@ use Koha::Account;
 use Koha::Account::Lines;
 use Koha::Patrons;
 
-use Mojo::Util qw(b64_decode);
+use Mojo::Util  qw(b64_decode);
 use Digest::SHA qw(sha512_hex);
 use File::Basename;
 use Data::GUID;
@@ -43,10 +43,9 @@ our $metadata = {
     date_authored   => '2020-03-01',
     date_updated    => "2022-09-10",
     minimum_version => '20.11.00.000',
-    #    maximum_version => '21.11.14.000',
     version         => $VERSION,
-    description     => 'This plugin implements online payments using '
-      . 'Barclaycard ePDQ payments platform.',
+    description     => 'This plugin implements online payments'
+      . ' using Barclaycard ePDQ payments platform.'
 };
 
 sub new {
@@ -152,12 +151,12 @@ sub opac_online_payment_begin {
             payment_method => scalar $cgi->param('payment_method')
         }
     );
-    $inputs->{ACCEPTURL}  = $returnURL->as_string;
+    $inputs->{ACCEPTURL} = $returnURL->as_string;
     my $declineURL = $returnURL->clone;
     $declineURL->query_form(
         {
             payment_method => scalar $cgi->param('payment_method'),
-            status => 'declined'
+            status         => 'declined'
         }
     );
     $inputs->{DECLINEURL} = $declineURL->as_string;
@@ -165,10 +164,10 @@ sub opac_online_payment_begin {
     $cancelURL->query_form(
         {
             payment_method => scalar $cgi->param('payment_method'),
-            status => 'canceled'
+            status         => 'canceled'
         }
     );
-    $inputs->{CANCELURL}  = $cancelURL->as_string;
+    $inputs->{CANCELURL} = $cancelURL->as_string;
 
     my $backURL = URI->new( C4::Context->preference('OPACBaseURL')
           . "/cgi-bin/koha/opac-account.pl" );
@@ -207,60 +206,78 @@ sub opac_online_payment_end {
         }
     );
 
-    my $orderID = $cgi->param('orderID');
-    my $STATUS  = $cgi->param('STATUS');
-    my $NCERROR = $cgi->param('NCERROR');
-    my $PAYID   = $cgi->param('PAYID');
-    my $error   = 0;
-
-    my $table = $self->get_qualified_table_name('orders');
-    my $dbh   = C4::Context->dbh;
-    my $sth =
-      $dbh->prepare(
-        "SELECT accountline_id, amount FROM $table WHERE orderid = ?");
-    $sth->execute($orderID);
-    my @accountlines;
-    my $total_amount = 0;
-
-    while ( my ( $accountline_id, $amount ) = $sth->fetchrow_array() ) {
-        push @accountlines, $accountline_id;
-        $total_amount = $total_amount + $amount;
+    my $param_hash = {};
+    my @params     = $cgi->multi_param;
+    for my $param (@params) {
+        my $key = uc($param);
+        $param_hash->{$key} = $cgi->param($param);
     }
-    $total_amount = $total_amount / 100;
+    if ( $self->validate_digest($param_hash) ) {
+        my $orderID = $cgi->param('orderID');
+        my $STATUS  = $cgi->param('STATUS');
+        my $NCERROR = $cgi->param('NCERROR');
+        my $PAYID   = $cgi->param('PAYID');
+        my $error   = 0;
 
-    # Success
-    if ( $STATUS == 5 || $STATUS == 9 ) {
-        my $account = Koha::Account->new( { patron_id => $borrowernumber } );
-        my @lines   = Koha::Account::Lines->search(
-            {
-                accountlines_id => { -in => \@accountlines }
-            }
-        )->as_list;
+        my $table = $self->get_qualified_table_name('orders');
+        my $dbh   = C4::Context->dbh;
+        my $sth =
+          $dbh->prepare(
+            "SELECT accountline_id, amount FROM $table WHERE orderid = ?");
+        $sth->execute($orderID);
+        my @accountlines;
+        my $total_amount = 0;
 
-        $account->pay(
-            {
-                amount    => $total_amount,
-                lines     => \@lines,
-                note      => 'BarclaycardPayments',
-                interface => C4::Context->interface
-            }
-        );
-        print $cgi->redirect("/cgi-bin/koha/opac-account.pl?payment=$total_amount");
+        while ( my ( $accountline_id, $amount ) = $sth->fetchrow_array() ) {
+            push @accountlines, $accountline_id;
+            $total_amount = $total_amount + $amount;
+        }
+        $total_amount = $total_amount / 100;
+
+        # Success
+        if ( $STATUS == 5 || $STATUS == 9 ) {
+            my $account =
+              Koha::Account->new( { patron_id => $borrowernumber } );
+            my @lines = Koha::Account::Lines->search(
+                {
+                    accountlines_id => { -in => \@accountlines }
+                }
+            )->as_list;
+
+            $account->pay(
+                {
+                    amount    => $total_amount,
+                    lines     => \@lines,
+                    note      => 'BarclaycardPayments',
+                    interface => C4::Context->interface
+                }
+            );
+            print $cgi->redirect(
+                "/cgi-bin/koha/opac-account.pl?payment=$total_amount");
+        }
+
+        # Failed
+        elsif ( $STATUS == 2 ) {
+            $template->param( error_code => "ERROR_FAILED" );
+            $error = 1;
+        }
+
+        # Cancelled
+        elsif ( $STATUS == 1 ) {
+            $template->param( error_code => "ERROR_CANCELLED" );
+            $error = 1;
+        }
+        else {
+            $template->param(
+                error_code  => "ERROR_PROCESSING",
+                status_code => $STATUS
+            );
+            $error = 1;
+        }
     }
-
-    # Failed
-    elsif ( $STATUS == 2 ) {
-        $template->param( error_code => "ERROR_FAILED" );
-        $error = 1;
-    }
-
-    # Cancelled
-    elsif ( $STATUS == 1 ) {
-        $template->param( error_code => "ERROR_CANCELLED" );
-        $error = 1;
-    }
+    # Validation failure
     else {
-        $template->param( error_code => "ERROR_PROCESSING", status_code => $STATUS );
+        $template->param( error_code => "VALIDATION_ERROR" );
         $error = 1;
     }
 
@@ -329,7 +346,9 @@ sub install {
 
 =head2 get_digest
 
-  Internal routine for generating the signature digest for messages
+Internal routine for generating the signature digest for messages
+
+NOTE: All parameters passed must have uppercase keys.
 
 =cut
 
@@ -345,32 +364,55 @@ sub get_digest {
           if ( defined( $params->{$param} ) && $params->{$param} ne '' );
     }
 
-    # FIXME: Test this works "naturally" with ITEM1, ITEM2, ITEM10, ITEM11
+    # FIXME: Test needs to work "naturally" with ITEM1, ITEM2, ITEM10, ITEM11
 
     my $digest = sha512_hex($data);
     while ( length($digest) % 4 ) {
         $digest .= '=';
     }
 
-    #warn "Data to hash: " . $data;
-    #warn "Digest: " . uc($digest);
-
     return uc($digest);
 }
+
+=head2 validate_digest
+
+Internal routine for validating the signature digest for messages
+
+NOTE: All parameters passed must have uppercase keys.
+
+=cut
 
 sub validate_digest {
     my ( $self, $params ) = @_;
 
-    my $SHA_OUT = $self->retrieve_data('SHA_OUT');
+    my $SHA_OUT    = $self->retrieve_data('SHA_OUT');
+    my @sha_params = (
+        qw(AAVADDRESS  AAVCHECK  AAVMAIL  AAVNAME  AAVPHONE  AAVZIP  ACCEPTANCE
+          ALIAS  AMOUNT  BIC  BIN  BRAND  CARDNO  CCCTY  CN  COLLECTOR_BIC
+          COLLECTOR_IBAN  COMPLETIONID  COMPLUS  CREATION_STATUS  CREDITDEBIT
+          CURRENCY  CVCCHECK  DCC_COMMPERCENTAGE  DCC_CONVAMOUNT  DCC_CONVCCY
+          DCC_EXCHRATE  DCC_EXCHRATESOURCE  DCC_EXCHRATETS  DCC_INDICATOR
+          DCC_MARGINPERCENTAGE  DCC_VALIDHOURS  DEVICEID  DIGESTCARDNO  ECI  ED
+          EMAIL  ENCCARDNO  FXAMOUNT  FXCURRENCY  IP  IPCTY  MANDATEID  MOBILEMODE
+          NBREMAILUSAGE  NBRIPUSAGE  NBRIPUSAGE_ALLTX  NBRUSAGE  NCERROR  ORDERID
+          PAYID  PAYIDSUB  PAYMENT_REFERENCE  PM  REQUESTCOMPLETIONID  SCO_CATEGORY
+          SCORING  SEQUENCETYPE  SIGNDATE  STATUS  SUBBRAND  SUBSCRIPTION_ID
+          TICKET  TRXDATE  VC)
+    );
 
     my $data;
-    for my $param ( sort keys %{$params} ) {
-        unless ( $param eq 'SHASIGN' ) {
-            $data .= uc($param) . '=' . $params->{$param} . $SHA_OUT
-              if ( defined( $params->{$param} ) && $params->{$param} ne '' );
+    for my $param (@sha_params) {
+        if ( defined( $params->{$param} ) && $params->{$param} ne '' ) {
+            $data .= $param . '=' . $params->{$param} . $SHA_OUT;
         }
     }
 
+    my $digest = sha512_hex($data);
+    while ( length($digest) % 4 ) {
+        $digest .= '=';
+    }
+
+    return ( $params->{SHASIGN} eq $digest );
 }
 
 =head2 get_url
