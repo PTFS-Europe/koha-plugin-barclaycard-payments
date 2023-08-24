@@ -35,7 +35,9 @@
                         [% ELSIF error_code == 'ERROR_PROCESSING' %]
                             <p>Something went wrong, the transaction was not completed</p>
                             <p>Please contact a librarian for details.</p>
-                            <p>Status code returned from Barcleycard: [% status_code | html %]</p>
+                            <p>Status code returned from Barclaycard: [% status_code | html %]</p>
+                        [% ELSIF error_code == 'VALIDATION_ERROR' %]
+                            <p>Payment could not be confirmed, please report this to a librarian.</p>
                         [% END %]
                     </div>
                 </div>

@@ -34,7 +34,8 @@ use Data::GUID;
 use Data::Dumper;
 
 ## Here we set our plugin version
-our $VERSION = "1.01";
+our $VERSION = "1.02";
+our $debug = 0;
 
 ## Here is our metadata, some keys are required, some are optional
 our $metadata = {
@@ -214,7 +215,10 @@ sub opac_online_payment_end {
         my $key = uc($param);
         $param_hash->{$key} = $cgi->param($param);
     }
+    use Data::Dumper;
+    warn Dumper($param_hash);
     if ( $self->validate_digest($param_hash) ) {
+	warn "Param hash validated" if $debug;
         my $orderID = $cgi->param('orderID');
         my $STATUS  = $cgi->param('STATUS');
         my $NCERROR = $cgi->param('NCERROR');
@@ -278,6 +282,7 @@ sub opac_online_payment_end {
     }
     # Validation failure
     else {
+	warn "Param hash failed validation" if $debug;
         $template->param( error_code => "VALIDATION_ERROR" );
         $error = 1;
     }
@@ -412,6 +417,8 @@ sub validate_digest {
     while ( length($digest) % 4 ) {
         $digest .= '=';
     }
+    $digest = uc($digest);
+    warn "Digest for comparison: ".$digest;
 
     return ( $params->{SHASIGN} eq $digest );
 }

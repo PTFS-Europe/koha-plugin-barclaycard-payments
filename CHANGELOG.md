@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## 1.02
+
+### Added
+- Simple debugging
+
+### Fixed
+- Digest comparison require upper case
+
 ## 1.01
 
 ### Fixed
