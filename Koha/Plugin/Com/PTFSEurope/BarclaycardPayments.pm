@@ -34,7 +34,7 @@ use Data::GUID;
 use Data::Dumper;
 
 ## Here we set our plugin version
-our $VERSION = "1.02";
+our $VERSION = "1.03";
 our $debug = 0;
 
 ## Here is our metadata, some keys are required, some are optional
